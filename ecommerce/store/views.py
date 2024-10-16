@@ -1,5 +1,3 @@
-# store/views.py
-
 from django.shortcuts import render, redirect
 from .models import Product, Order, OrderItem
 from django.contrib.auth.decorators import login_required
@@ -46,3 +44,15 @@ def view_cart(request):
 
     context = {'items': items}
     return render(request, 'store/cart.html', context)
+
+
+#Alternatively, if you want to ensure that only authenticated users can add items to the cart, you can use Django's @login_required decorator:
+# @login_required
+# def add_to_cart(request, product_id):
+#     customer = request.user.customer
+#     product = Product.objects.get(id=product_id)
+#     order, created = Order.objects.get_or_create(customer=customer, complete=False)
+#     order_item, created = OrderItem.objects.get_or_create(order=order, product=product)
+#     order_item.quantity += 1
+#     order_item.save()
+#     return redirect('cart')
