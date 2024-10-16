@@ -23,3 +23,26 @@ def add_to_cart(request, product_id):
         request.session['cart'] = cart
 
     return redirect('cart')
+
+# store/views.py
+
+def view_cart(request):
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        items = order.orderitem_set.all()
+    else:
+        # Use session-based cart for anonymous users
+        cart = request.session.get('cart', {})
+        items = []
+        for product_id, quantity in cart.items():
+            product = Product.objects.get(id=product_id)
+            item = {
+                'product': product,
+                'quantity': quantity,
+                'get_total': product.price * quantity,
+            }
+            items.append(item)
+
+    context = {'items': items}
+    return render(request, 'store/cart.html', context)
