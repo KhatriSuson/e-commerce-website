@@ -82,6 +82,13 @@
 </style>
 
 <div class="product-container">
+    <div class="card-img-top" style="height: 200px; overflow: hidden;">
+        {% if product.image %}
+            <img src="{{ product.image.url }}" class="img-fluid w-100 h-100" alt="{{ product.name }}" style="object-fit: cover; transition: transform 0.5s ease-in-out;">
+        {% else %}
+            <img src="{% static 'img/placeholder.png' %}" class="img-fluid w-100 h-100" alt="No Image" style="object-fit: cover;">
+        {% endif %}
+    </div>
     <h2>{{ product.name }}</h2>
     <p class="product-description">{{ product.description }}</p>
     <p class="product-price">Price: ${{ product.price }}</p>
