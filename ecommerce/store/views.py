@@ -125,4 +125,58 @@ def order_history(request):
         return redirect('login')
     
     
+def product_list(request):
+    """View to display a list of products."""
+    products = Product.objects.all()
+    return render(request, 'products/product_list.html', {'products': products})
 
+def product_detail(request, product_id):
+    """View to display details for a specific product."""
+    product = get_object_or_404(Product, id=product_id)
+    return render(request, 'store/product_detail.html', {'product': product})
+
+# Account Views
+def register(request):
+    """User registration view."""
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, 'Registration successful!')
+            return redirect('account')
+        else:
+            messages.error(request, 'Registration failed. Please check the form.')
+    else:
+        form = UserRegistrationForm()
+    return render(request, 'accounts/register.html', {'form': form})
+
+def user_login(request):
+    """User login view."""
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.success(request, 'Login successful!')
+                return redirect('account')
+            else:
+                messages.error(request, 'Invalid username or password.')
+    else:
+        form = LoginForm()
+    return render(request, 'accounts/login.html', {'form': form})
+
+@login_required
+def account(request):
+    """User account dashboard view."""
+    return render(request, 'accounts/account.html')
+
+@login_required
+def user_logout(request):
+    """User logout view."""
+    logout(request)
+    messages.success(request, 'You have successfully logged out.')
+    return redirect('home')
