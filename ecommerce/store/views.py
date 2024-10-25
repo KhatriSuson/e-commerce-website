@@ -12,6 +12,9 @@ def home(request):
     context = {'products': products}
     return render(request, 'store/home.html', context)
 
+def product_list(request):
+    products = Product.objects.all()
+    return render(request, 'store/product_list.html', {'products': products})
 # Product detail view
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
