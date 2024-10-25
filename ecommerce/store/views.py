@@ -1,6 +1,7 @@
 # store/views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product, Order, OrderItem, Customer
+from django.contrib import messages
 
 def home(request):
     products = Product.objects.all()
@@ -33,23 +34,36 @@ def view_cart(request):
     context = {'items': items}
     return render(request, 'store/cart.html', context)
 
-def add_to_cart(request, product_id):
-    product = Product.objects.get(id=product_id)
-    if request.user.is_authenticated:
-        customer = request.user.customer
-        order, created = Order.objects.get_or_create(customer=customer, complete=False)
-        order_item, created = OrderItem.objects.get_or_create(order=order, product=product)
-        order_item.quantity += 1
-        order_item.save()
-    else:
-        cart = request.session.get('cart', {})
-        if product_id in cart:
-            cart[product_id] += 1
-        else:
-            cart[product_id] = 1
-        request.session['cart'] = cart
+# def add_to_cart(request, product_id):
+#     product = Product.objects.get(id=product_id)
+#     if request.user.is_authenticated:
+#         customer = request.user.customer
+#         order, created = Order.objects.get_or_create(customer=customer, complete=False)
+#         order_item, created = OrderItem.objects.get_or_create(order=order, product=product)
+#         order_item.quantity += 1
+#         order_item.save()
+#     else:
+#         cart = request.session.get('cart', {})
+#         if product_id in cart:
+#             cart[product_id] += 1
+#         else:
+#             cart[product_id] = 1
+#         request.session['cart'] = cart
     
-    return redirect('cart')
+#     return redirect('cart')
+
+def add_to_cart(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    cart = request.session.get('cart', {})
+
+    if product_id in cart:
+        cart[product_id]['quantity'] += 1
+    else:
+        cart[product_id] = {'name': product.name, 'price': product.price, 'quantity': 1}
+
+    request.session['cart'] = cart
+    messages.success(request, f'{product.name} was added to your cart.')
+    return redirect('product_detail', product_id=product_id)
 
 def remove_from_cart(request, product_id):
     # Similar to add_to_cart, but for removing products from the cart
