@@ -1,4 +1,3 @@
-# store/views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product, Order, OrderItem, Customer
 from django.contrib import messages
@@ -6,23 +5,26 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, authenticate
 from .forms import UserRegistrationForm, LoginForm
 from django.contrib.auth.models import User
+
+# Home page displaying all products
 def home(request):
     products = Product.objects.all()
     context = {'products': products}
     return render(request, 'store/home.html', context)
 
+# Product detail view
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     context = {'product': product}
     return render(request, 'store/product_detail.html', context)
 
+# View cart functionality for logged-in users
 def view_cart(request):
     if request.user.is_authenticated:
         customer = request.user.customer
         order, created = Order.objects.get_or_create(customer=customer, complete=False)
         items = order.orderitem_set.all()
     else:
-        # Handle anonymous user with session-based cart (see earlier explanation)
         cart = request.session.get('cart', {})
         items = []
         for product_id, quantity in cart.items():
@@ -37,24 +39,7 @@ def view_cart(request):
     context = {'items': items}
     return render(request, 'store/cart.html', context)
 
-# def add_to_cart(request, product_id):
-#     product = Product.objects.get(id=product_id)
-#     if request.user.is_authenticated:
-#         customer = request.user.customer
-#         order, created = Order.objects.get_or_create(customer=customer, complete=False)
-#         order_item, created = OrderItem.objects.get_or_create(order=order, product=product)
-#         order_item.quantity += 1
-#         order_item.save()
-#     else:
-#         cart = request.session.get('cart', {})
-#         if product_id in cart:
-#             cart[product_id] += 1
-#         else:
-#             cart[product_id] = 1
-#         request.session['cart'] = cart
-    
-#     return redirect('cart')
-
+# Add product to cart (both for logged-in and anonymous users)
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     cart = request.session.get('cart', {})
@@ -64,7 +49,7 @@ def add_to_cart(request, product_id):
     else:
         cart[product_id] = {
             'name': product.name,
-            'price': float(product.price),  # Convert Decimal to float here
+            'price': float(product.price),
             'quantity': 1
         }
 
@@ -72,6 +57,7 @@ def add_to_cart(request, product_id):
     messages.success(request, f'{product.name} was added to your cart.')
     return redirect('product_detail', product_id=product_id)
 
+# View cart for session-based users
 def view_cart(request):
     cart = request.session.get('cart', {})
     cart_items = []
@@ -87,9 +73,9 @@ def view_cart(request):
         'cart_items': cart_items,
         'total_price': total_price,
     }
-    return render(request, 'cart.html', context)
+    return render(request, 'store/cart.html', context)
 
-
+# Update cart item quantities
 def update_cart(request, product_id):
     if request.method == 'POST':
         cart = request.session.get('cart', {})
@@ -101,7 +87,7 @@ def update_cart(request, product_id):
             messages.success(request, 'Cart updated successfully.')
         return redirect('view_cart')
 
-
+# Remove item from cart
 def remove_from_cart(request, product_id):
     cart = request.session.get('cart', {})
     if product_id in cart:
@@ -110,11 +96,12 @@ def remove_from_cart(request, product_id):
         messages.success(request, 'Item removed from cart.')
     return redirect('view_cart')
 
-
+# Placeholder for checkout functionality
 def checkout(request):
     # Handle checkout process here
     pass
 
+# View order history for authenticated users
 def order_history(request):
     if request.user.is_authenticated:
         customer = request.user.customer
@@ -123,21 +110,9 @@ def order_history(request):
         return render(request, 'store/order_history.html', context)
     else:
         return redirect('login')
-    
-    
-def product_list(request):
-    """View to display a list of products."""
-    products = Product.objects.all()
-    return render(request, 'products/product_list.html', {'products': products})
 
-def product_detail(request, product_id):
-    """View to display details for a specific product."""
-    product = get_object_or_404(Product, id=product_id)
-    return render(request, 'store/product_detail.html', {'product': product})
-
-# Account Views
+# User registration view
 def register(request):
-    """User registration view."""
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
@@ -151,8 +126,8 @@ def register(request):
         form = UserRegistrationForm()
     return render(request, 'store/register.html', {'form': form})
 
+# User login view
 def user_login(request):
-    """User login view."""
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -169,14 +144,14 @@ def user_login(request):
         form = LoginForm()
     return render(request, 'accounts/login.html', {'form': form})
 
+# User account dashboard
 @login_required
 def account(request):
-    """User account dashboard view."""
     return render(request, 'accounts/account.html')
 
+# User logout view
 @login_required
 def user_logout(request):
-    """User logout view."""
     logout(request)
     messages.success(request, 'You have successfully logged out.')
     return redirect('home')
