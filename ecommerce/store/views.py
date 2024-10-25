@@ -82,6 +82,19 @@ def view_cart(request):
     }
     return render(request, 'cart.html', context)
 
+
+def update_cart(request, product_id):
+    if request.method == 'POST':
+        cart = request.session.get('cart', {})
+        quantity = int(request.POST.get('quantity', 1))
+
+        if quantity > 0:
+            cart[product_id]['quantity'] = quantity
+            request.session['cart'] = cart
+            messages.success(request, 'Cart updated successfully.')
+        return redirect('view_cart')
+
+
 def remove_from_cart(request, product_id):
     # Similar to add_to_cart, but for removing products from the cart
     pass
