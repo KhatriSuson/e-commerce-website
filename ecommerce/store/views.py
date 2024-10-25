@@ -2,8 +2,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product, Order, OrderItem, Customer
 from django.contrib import messages
-from decimal import Decimal
-
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login, logout, authenticate
+from .forms import UserRegistrationForm, LoginForm
+from django.contrib.auth.models import User
 def home(request):
     products = Product.objects.all()
     context = {'products': products}
@@ -121,3 +123,6 @@ def order_history(request):
         return render(request, 'store/order_history.html', context)
     else:
         return redirect('login')
+    
+    
+
