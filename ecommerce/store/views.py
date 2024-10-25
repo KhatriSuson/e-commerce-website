@@ -65,6 +65,23 @@ def add_to_cart(request, product_id):
     messages.success(request, f'{product.name} was added to your cart.')
     return redirect('product_detail', product_id=product_id)
 
+def view_cart(request):
+    cart = request.session.get('cart', {})
+    cart_items = []
+
+    total_price = 0
+    for product_id, item in cart.items():
+        product = get_object_or_404(Product, id=product_id)
+        quantity = item['quantity']
+        total_price += product.price * quantity
+        cart_items.append({'product': product, 'quantity': quantity})
+
+    context = {
+        'cart_items': cart_items,
+        'total_price': total_price,
+    }
+    return render(request, 'cart.html', context)
+
 def remove_from_cart(request, product_id):
     # Similar to add_to_cart, but for removing products from the cart
     pass
