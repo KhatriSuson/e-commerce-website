@@ -1,6 +1,90 @@
 {% extends 'base.html' %}
+
 {% block title %}Shopping Cart{% endblock %}
+
 {% block content %}
+<style>
+    /* Basic Styling */
+    .cart-container {
+        max-width: 800px;
+        margin: auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .cart-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #eaeaea;
+    }
+
+    .cart-item h3 {
+        font-size: 1.2em;
+        margin: 0;
+    }
+
+    .cart-quantity input {
+        width: 50px;
+        text-align: center;
+    }
+
+    .cart-total {
+        font-size: 1.5em;
+        text-align: right;
+        margin-top: 20px;
+        font-weight: bold;
+    }
+
+    .checkout-btn {
+        display: inline-block;
+        background-color: #28a745;
+        color: #fff;
+        padding: 10px 20px;
+        font-size: 1.1em;
+        text-align: center;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: background 0.3s ease;
+    }
+
+    .checkout-btn:hover {
+        background-color: #218838;
+    }
+</style>
+
+<div class="cart-container">
     <h2>Your Cart</h2>
-    <!-- Cart details will go here -->
+
+    {% if cart_items %}
+        {% for item in cart_items %}
+        <div class="cart-item">
+            <div>
+                <h3>{{ item.product.name }}</h3>
+                <p>Price: ${{ item.product.price }}</p>
+            </div>
+            <div class="cart-quantity">
+                <form action="{% url 'update_cart' item.product.id %}" method="post">
+                    {% csrf_token %}
+                    <input type="number" name="quantity" value="{{ item.quantity }}" min="1">
+                    <button type="submit">Update</button>
+                </form>
+            </div>
+            <div>
+                <form action="{% url 'remove_from_cart' item.product.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Remove</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+        <p class="cart-total">Total: ${{ total_price }}</p>
+        <a href="{% url 'checkout' %}" class="checkout-btn">Proceed to Checkout</a>
+    {% else %}
+        <p>Your cart is empty.</p>
+    {% endif %}
+</div>
 {% endblock %}
