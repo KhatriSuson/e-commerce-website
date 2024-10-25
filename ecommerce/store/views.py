@@ -2,6 +2,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product, Order, OrderItem, Customer
 from django.contrib import messages
+from decimal import Decimal
 
 def home(request):
     products = Product.objects.all()
