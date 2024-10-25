@@ -1,11 +1,100 @@
 {% extends 'base.html' %}
+
 {% block title %}{{ product.name }}{% endblock %}
+
 {% block content %}
+<style>
+    /* Styling */
+    .product-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        max-width: 600px;
+        margin: auto;
+        padding: 20px;
+        background: #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .product-container:hover {
+        transform: scale(1.02);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    h2 {
+        font-size: 2em;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .product-description {
+        font-size: 1.1em;
+        color: #666;
+        line-height: 1.5;
+        margin-bottom: 20px;
+    }
+
+    .product-price {
+        font-size: 1.3em;
+        color: #f77;
+        margin-bottom: 20px;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .add-to-cart-btn {
+        background-color: #28a745;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        font-size: 1.1em;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background 0.3s ease, transform 0.2s ease;
+        animation: pulse 1.5s infinite;
+    }
+
+    .add-to-cart-btn:hover {
+        background-color: #218838;
+        transform: scale(1.05);
+    }
+
+    /* Animations */
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+</style>
+
+<div class="product-container">
     <h2>{{ product.name }}</h2>
-    <p>{{ product.description }}</p>
-    <p>Price: ${{ product.price }}</p>
+    <p class="product-description">{{ product.description }}</p>
+    <p class="product-price">Price: ${{ product.price }}</p>
     <form action="{% url 'add_to_cart' product.id %}" method="post">
         {% csrf_token %}
-        <button type="submit">Add to Cart</button>
+        <button type="submit" class="add-to-cart-btn">Add to Cart</button>
     </form>
+</div>
+
+<script>
+    // Optional JavaScript for further effects
+    document.querySelector('.add-to-cart-btn').addEventListener('click', function() {
+        this.textContent = "Adding...";
+    });
+</script>
 {% endblock %}
