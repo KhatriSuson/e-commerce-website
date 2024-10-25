@@ -96,8 +96,13 @@ def update_cart(request, product_id):
 
 
 def remove_from_cart(request, product_id):
-    # Similar to add_to_cart, but for removing products from the cart
-    pass
+    cart = request.session.get('cart', {})
+    if product_id in cart:
+        del cart[product_id]
+        request.session['cart'] = cart
+        messages.success(request, 'Item removed from cart.')
+    return redirect('view_cart')
+
 
 def checkout(request):
     # Handle checkout process here
