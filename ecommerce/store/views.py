@@ -59,7 +59,11 @@ def add_to_cart(request, product_id):
     if product_id in cart:
         cart[product_id]['quantity'] += 1
     else:
-        cart[product_id] = {'name': product.name, 'price': product.price, 'quantity': 1}
+        cart[product_id] = {
+            'name': product.name,
+            'price': float(product.price),  # Convert Decimal to float here
+            'quantity': 1
+        }
 
     request.session['cart'] = cart
     messages.success(request, f'{product.name} was added to your cart.')
