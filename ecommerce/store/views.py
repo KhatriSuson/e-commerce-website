@@ -149,7 +149,7 @@ def register(request):
             messages.error(request, 'Registration failed. Please check the form.')
     else:
         form = UserRegistrationForm()
-    return render(request, 'accounts/register.html', {'form': form})
+    return render(request, 'store/register.html', {'form': form})
 
 def user_login(request):
     """User login view."""
