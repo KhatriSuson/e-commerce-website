@@ -9,14 +9,10 @@ urlpatterns = [
     # Product detail page (example: /product/1/)
     path('product/<int:product_id>/', views.product_detail, name='product_detail'),
 
-    # Cart page (showing items in the cart)
-    path('cart/', views.view_cart, name='cart'),
-
-    # Add a product to the cart
-    path('add-to-cart/<int:product_id>/', views.add_to_cart, name='add_to_cart'),
-
-    # Remove item from the cart (optional)
-    path('remove-from-cart/<int:product_id>/', views.remove_from_cart, name='remove_from_cart'),
+    path('cart/', views.view_cart, name='view_cart'),
+    path('add_to_cart/<int:product_id>/', views.add_to_cart, name='add_to_cart'),
+    path('update_cart/<int:product_id>/', views.update_cart, name='update_cart'),
+    path('remove_from_cart/<int:product_id>/', views.remove_from_cart, name='remove_from_cart'),
 
     # Checkout page (optional)
     path('checkout/', views.checkout, name='checkout'),
