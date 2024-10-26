@@ -17,7 +17,7 @@ from .views import (
 
 urlpatterns = [
     path('', home, name='home'),
-    path('products/', product_list, name='product'),
+    # path('products/', product_list, name='product'),
     path('product/<int:product_id>/', product_detail, name='product_detail'),
     path('cart/', view_cart, name='view_cart'),
     path('add-to-cart/<int:product_id>/', add_to_cart, name='add_to_cart'),
